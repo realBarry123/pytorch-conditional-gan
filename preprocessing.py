@@ -1,11 +1,9 @@
 """
 Barry Yu
-April 13, 2024
+2024.04.13
 Sign Language Conditional GAN
 """
 
-import csv
-import pandas
 import torchvision
 import numpy
 
