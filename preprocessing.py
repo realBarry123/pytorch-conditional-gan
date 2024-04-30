@@ -10,6 +10,10 @@ import numpy
 train_data = numpy.genfromtxt("sign_mnist/train.csv", delimiter=',')
 test_data = numpy.genfromtxt("sign_mnist/test.csv", delimiter=',')
 
+def one_hot(_label):
+    new_label = numpy.zeros(26)
+    new_label[int(_label)] = 1
+    return new_label
 
 def format_data(_data):
     """
@@ -19,12 +23,12 @@ def format_data(_data):
     """
 
     # create new arrays
-    labels = numpy.empty(len(_data)-1)
+    labels = numpy.empty((len(_data)-1, 26))
     images = numpy.empty((len(_data)-1, 28, 28))
 
     # separate labels from images
     for i in range(len(_data)-1):
-        labels[i] = _data[i+1][0]
+        labels[i] = one_hot(_data[i+1][0])
         images[i] = numpy.reshape(numpy.delete(_data[i+1], 0), (28, 28))
 
     # squishification
@@ -44,4 +48,4 @@ print(train_labels.shape)
 print(test_images.shape)
 print(test_labels.shape)
 
-print(test_images)
+print(test_labels)

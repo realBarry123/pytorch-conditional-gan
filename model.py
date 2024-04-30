@@ -4,6 +4,7 @@ import torch.nn.parallel
 
 
 class Generator(nn.Module):
+
     def __init__(self, ngpu):
         super(Generator, self).__init__()
         self.ngpu = ngpu
@@ -24,7 +25,6 @@ class Generator(nn.Module):
             nn.ReLU(),
             nn.Conv2d(in_channels=128, out_channels=1, kernel_size=4, bias=False),
         )
-
 
     def forward(self, latent_input, label_input):
         latent_output = self.latent(latent_input)
