@@ -31,9 +31,3 @@ class Generator(nn.Module):
         label_output = self.label(label_input)
         concated_tensor = torch.cat((latent_output, label_output), dim=2)
         return self.upscale(concated_tensor)
-
-
-print(Generator(0))
-z = torch.randn(100)
-netG = Generator(0).to("cpu")
-print(netG(z, 20))
