@@ -14,4 +14,4 @@ z = torch.randn(100)
 netG = Generator(0).to("cpu")
 print(test_labels[0])
 
-print(netG(z, torch.tensor(test_labels[0])))
+print(netG(z, torch.tensor(test_labels[0]).long()))
