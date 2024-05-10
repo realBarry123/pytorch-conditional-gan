@@ -14,9 +14,9 @@ class Generator(nn.Module):
             nn.Unflatten(0, (7, 7, 128))
         )
         self.label = nn.Sequential(
-            nn.Embedding(1, 50),
+            nn.Embedding(26, 50),
             nn.Linear(in_features=50, out_features=49),
-            nn.Unflatten(0, (7, 7, 1))
+            nn.Unflatten(1, (7, 7))
         )
         self.upscale = nn.Sequential(
             nn.ConvTranspose2d(in_channels=129, out_channels=128, kernel_size=4, stride=2, bias=False),
@@ -29,5 +29,7 @@ class Generator(nn.Module):
     def forward(self, latent_input, label_input):
         latent_output = self.latent(latent_input)
         label_output = self.label(label_input)
+        print(latent_output.shape)
+        print(label_output.shape)
         concated_tensor = torch.cat((latent_output, label_output), dim=2)
         return self.upscale(concated_tensor)
