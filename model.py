@@ -3,6 +3,15 @@ import torch.nn as nn
 import torch.nn.parallel
 
 
+class PrintShape(nn.Module):
+    def __init__(self):
+        super(PrintShape, self).__init__()
+
+    def forward(self, x):
+        # Do your print / debug stuff here
+        print(x.shape)
+        return x
+
 class Generator(nn.Module):
 
     def __init__(self, ngpu):
@@ -14,9 +23,11 @@ class Generator(nn.Module):
             nn.Unflatten(0, (7, 7, 128))
         )
         self.label = nn.Sequential(
-            nn.Embedding(26, 50),
+            PrintShape(),
+            nn.Embedding(num_embeddings=1, embedding_dim=50),
+            PrintShape(),
             nn.Linear(in_features=50, out_features=49),
-            nn.Unflatten(1, (7, 7))
+            nn.Unflatten(dim=1, unflattened_size=(7, 7))
         )
         self.upscale = nn.Sequential(
             nn.ConvTranspose2d(in_channels=129, out_channels=128, kernel_size=4, stride=2, bias=False),

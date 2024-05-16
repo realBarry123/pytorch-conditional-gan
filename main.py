@@ -12,6 +12,6 @@ test_labels, test_images = format_data(test_data)
 
 z = torch.randn(100)
 netG = Generator(0).to("cpu")
-print(test_labels[0])
-
+# print(test_labels[0])
+# print(torch.tensor(test_labels[0]).long().shape)
 print(netG(z, torch.tensor(test_labels[0]).long()))
