@@ -6,14 +6,16 @@ from preprocessing import format_data
 
 import matplotlib.pyplot as plt
 
+
 def plotImage(image):
     plt.imshow(image, interpolation='none')
     plt.show()
 
-#train_data = numpy.genfromtxt("sign_mnist/train.csv", delimiter=',')
+
+# train_data = numpy.genfromtxt("sign_mnist/train.csv", delimiter=',')
 test_data = numpy.genfromtxt("sign_mnist/test.csv", delimiter=',')
 
-#train_labels, train_images = format_data(train_data)
+# train_labels, train_images = format_data(train_data)
 test_labels, test_images = format_data(test_data)
 
 z = torch.randn(100)

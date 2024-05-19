@@ -10,17 +10,14 @@ import numpy
 train_data = numpy.genfromtxt("sign_mnist/train.csv", delimiter=',')
 test_data = numpy.genfromtxt("sign_mnist/test.csv", delimiter=',')
 
+
 def one_hot(_label):
     new_label = numpy.zeros(26)
     new_label[int(_label)] = 1
     return new_label
 
+
 def format_data(_data):
-    """
-    Turns raw 2d array into nice arrays of labels and images
-    :param _data: data loaded from the .csv
-    :return: everyone knows what this function returns
-    """
 
     # create new arrays
     labels = numpy.empty((len(_data)-1))
