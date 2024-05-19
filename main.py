@@ -1,7 +1,7 @@
 import torch
 import numpy
 
-from model import Generator
+from model import Generator, Discriminator
 from preprocessing import format_data
 
 import matplotlib.pyplot as plt
@@ -20,6 +20,7 @@ test_labels, test_images = format_data(test_data)
 
 z = torch.randn(100)
 netG = Generator(0).to("cpu")
-# print(torch.tensor(test_labels[0]).long().shape)
+netD = Discriminator(0).to("cpu")
 
-plotImage(netG(z, torch.tensor(test_labels[0]).long()).detach().numpy())
+print(netD(torch.tensor(test_images[0]).long(), torch.tensor(test_labels[0]).int()))
+plotImage(netG(z, torch.tensor(test_labels[0]).int()).detach().numpy())

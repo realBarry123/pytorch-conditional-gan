@@ -61,7 +61,7 @@ class Discriminator(nn.Module):
         self.label = nn.Sequential(
             nn.Embedding(num_embeddings=24, embedding_dim=50),
             nn.Linear(in_features=50, out_features=784),
-            nn.Unflatten(dim=1, unflattened_size=(28, 28))
+            nn.Unflatten(dim=0, unflattened_size=(28, 28)),
         )
 
         self.discriminate = nn.Sequential(
@@ -77,7 +77,10 @@ class Discriminator(nn.Module):
 
     def forward(self, latent, label):
 
-        label = self.label(label)
+        label = self.label(label).unsqueeze(2)
+        latent = latent.unsqueeze(2)
+
         concated_tensor = torch.cat((latent, label), dim=2)
+        concated_tensor = concated_tensor.permute(2, 0, 1)
 
         return self.discriminate(concated_tensor)
