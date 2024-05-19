@@ -8,7 +8,7 @@ Generating hands has long been a weekness of AI. However my hope is that once th
 ### 🧑‍💻 Progress Tracker
 - [x] ~~Start!~~
 - [x] ~~Load & preprocess images~~
-- [ ] Create generator architecture
+- [x] ~~Create generator architecture~~
 - [ ] Create discriminator architecture
 - [ ] Write loss functions
 - [ ] Write training script
