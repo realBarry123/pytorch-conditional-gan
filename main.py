@@ -4,6 +4,12 @@ import numpy
 from model import Generator
 from preprocessing import format_data
 
+import matplotlib.pyplot as plt
+
+def plotImage(image):
+    plt.imshow(image, interpolation='none')
+    plt.show()
+
 #train_data = numpy.genfromtxt("sign_mnist/train.csv", delimiter=',')
 test_data = numpy.genfromtxt("sign_mnist/test.csv", delimiter=',')
 
@@ -12,7 +18,6 @@ test_labels, test_images = format_data(test_data)
 
 z = torch.randn(100)
 netG = Generator(0).to("cpu")
-# print(test_labels[0])
 # print(torch.tensor(test_labels[0]).long().shape)
-print(test_labels[0])
-print(netG(z, torch.tensor(test_labels[0]).long()))
+
+plotImage(netG(z, torch.tensor(test_labels[0]).long()).detach().numpy())
