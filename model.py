@@ -24,10 +24,12 @@ class Generator(nn.Module):
         )
         self.label = nn.Sequential(
             PrintShape(),
-            nn.Embedding(num_embeddings=1, embedding_dim=50),
+            nn.Embedding(num_embeddings=26, embedding_dim=50),
             PrintShape(),
             nn.Linear(in_features=50, out_features=49),
-            nn.Unflatten(dim=1, unflattened_size=(7, 7))
+            PrintShape(),
+            nn.Unflatten(dim=0, unflattened_size=(7, 7, 1)),
+            PrintShape()
         )
         self.upscale = nn.Sequential(
             nn.ConvTranspose2d(in_channels=129, out_channels=128, kernel_size=4, stride=2, bias=False),
@@ -43,4 +45,5 @@ class Generator(nn.Module):
         print(latent_output.shape)
         print(label_output.shape)
         concated_tensor = torch.cat((latent_output, label_output), dim=2)
+        print(concated_tensor.shape)
         return self.upscale(concated_tensor)

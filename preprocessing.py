@@ -23,12 +23,12 @@ def format_data(_data):
     """
 
     # create new arrays
-    labels = numpy.empty((len(_data)-1, 26))
+    labels = numpy.empty((len(_data)-1))
     images = numpy.empty((len(_data)-1, 28, 28))
 
     # separate labels from images
     for i in range(len(_data)-1):
-        labels[i] = one_hot(_data[i+1][0])
+        labels[i] = _data[i+1][0]
         images[i] = numpy.reshape(numpy.delete(_data[i+1], 0), (28, 28))
 
     # squishification
@@ -43,9 +43,8 @@ def format_data(_data):
 train_labels, train_images = format_data(train_data)
 test_labels, test_images = format_data(test_data)
 
-print(train_images.shape)
-print(train_labels.shape)
-print(test_images.shape)
-print(test_labels.shape)
 
-print(test_labels)
+print(train_images.shape)  # (27455, 28, 28)
+print(train_labels.shape)  # (27455, 26)
+print(test_images.shape)  # (7172, 28, 28)
+print(test_labels.shape)  # (7172, 26)
