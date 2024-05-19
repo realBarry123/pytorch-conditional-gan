@@ -26,7 +26,7 @@ class Generator(nn.Module):
         )
 
         self.label = nn.Sequential(
-            nn.Embedding(num_embeddings=26, embedding_dim=50),
+            nn.Embedding(num_embeddings=24, embedding_dim=50),
             nn.Linear(in_features=50, out_features=49),
             nn.Unflatten(dim=0, unflattened_size=(7, 7, 1)),
         )
@@ -39,14 +39,45 @@ class Generator(nn.Module):
             nn.Conv2d(in_channels=128, out_channels=1, kernel_size=1, stride=1),
         )
 
-    def forward(self, latent_input, label_input):
+    def forward(self, latent, label):
 
-        latent_output = self.latent(latent_input)
-        label_output = self.label(label_input)
+        latent = self.latent(latent)
+        label = self.label(label)
 
-        concated_tensor = torch.cat((latent_output, label_output), dim=2)
+        concated_tensor = torch.cat((latent, label), dim=2)
 
         concated_tensor = concated_tensor.unsqueeze(0)  # [7, 7, 129] -> [1, 7, 7, 129]
         concated_tensor = concated_tensor.permute(0, 3, 1, 2)  # [1, 7, 7, 129] -> [1, 129, 7, 7]
 
         return torch.squeeze(self.upscale(concated_tensor))
+
+
+class Discriminator(nn.Module):
+    def __init__(self, ngpu):
+
+        super(Discriminator, self).__init__()
+        self.ngpu = ngpu
+
+        self.label = nn.Sequential(
+            nn.Embedding(num_embeddings=24, embedding_dim=50),
+            nn.Linear(in_features=50, out_features=784),
+            nn.Unflatten(dim=1, unflattened_size=(28, 28))
+        )
+
+        self.discriminate = nn.Sequential(
+            nn.Conv2d(in_channels=2, out_channels=64, kernel_size=3, stride=2, padding=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=2, padding=1),
+            nn.LeakyReLU(),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+            nn.Flatten(start_dim=0, end_dim=2),
+            nn.Dropout(p=0.5),
+            nn.Linear(in_features=1152, out_features=1)
+        )
+
+    def forward(self, latent, label):
+
+        label = self.label(label)
+        concated_tensor = torch.cat((latent, label), dim=2)
+
+        return self.discriminate(concated_tensor)
