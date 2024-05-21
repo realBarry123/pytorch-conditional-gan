@@ -22,5 +22,8 @@ z = torch.randn(100)
 netG = Generator(0).to("cpu")
 netD = Discriminator(0).to("cpu")
 
-print(netD(torch.tensor(test_images[0]).long(), torch.tensor(test_labels[0]).int()))
-plotImage(netG(z, torch.tensor(test_labels[0]).int()).detach().numpy())
+# print(netD(torch.tensor(test_images[0]).long(), torch.tensor(test_labels[0]).int()))
+# plotImage(netG(z, torch.tensor(test_labels[0]).int()).detach().numpy())
+
+print(netD(test_images[0], test_labels[0]))
+plotImage(netG(z, test_labels[0]).detach().numpy())

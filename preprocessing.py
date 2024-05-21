@@ -4,7 +4,7 @@ Barry Yu
 Sign Language Conditional GAN
 """
 
-import torchvision
+import torch
 import numpy
 
 train_data = numpy.genfromtxt("sign_mnist/train.csv", delimiter=',')
@@ -33,6 +33,11 @@ def format_data(_data):
         for j in range(len(images[i])):
             for k in range(len(images[i][j])):
                images[i][j][k] /= 255
+
+    # convert to torch tensors
+    for i in range(len(labels)):
+        labels[i] = torch.tensor(labels[i]).int()
+        images[i] = torch.tensor(images[i]).long()
 
     return labels, images
 
