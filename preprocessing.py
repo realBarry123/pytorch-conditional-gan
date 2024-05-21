@@ -45,7 +45,7 @@ train_labels, train_images = format_data(train_data)
 test_labels, test_images = format_data(test_data)
 
 
-print(train_images.shape)  # (27455, 28, 28)
-print(train_labels.shape)  # (27455, 26)
-print(test_images.shape)  # (7172, 28, 28)
-print(test_labels.shape)  # (7172, 26)
+# print(train_images.shape)  # (27455, 28, 28)
+# print(train_labels.shape)  # (27455, 26)
+# print(test_images.shape)  # (7172, 28, 28)
+# print(test_labels.shape)  # (7172, 26)
