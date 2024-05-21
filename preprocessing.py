@@ -34,10 +34,9 @@ def format_data(_data):
             for k in range(len(images[i][j])):
                images[i][j][k] /= 255
 
-    # convert to torch tensors
-    for i in range(len(labels)):
-        labels[i] = torch.tensor(labels[i]).int()
-        images[i] = torch.tensor(images[i]).long()
+    # convert to torch tensors with correct types
+    labels = torch.tensor(labels).int()
+    images = torch.tensor(images).long()
 
     return labels, images
 
