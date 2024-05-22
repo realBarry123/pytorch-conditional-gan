@@ -29,15 +29,19 @@ class Generator(nn.Module):
         self.ngpu = ngpu
 
         self.latent = nn.Sequential(
+            PrintShape(),
             nn.Linear(in_features=100, out_features=6272),
             nn.ReLU(),
-            nn.Unflatten(0, (7, 7, 128))
+            PrintShape(),
+            nn.Unflatten(dim=1, unflattened_size=(7, 7, 128))
         )
 
         self.label = nn.Sequential(
-            nn.Embedding(num_embeddings=24, embedding_dim=50),
+            nn.Embedding(num_embeddings=25, embedding_dim=50),
+            PrintShape(),
             nn.Linear(in_features=50, out_features=49),
-            nn.Unflatten(dim=0, unflattened_size=(7, 7, 1)),
+            PrintShape(),
+            nn.Unflatten(dim=1, unflattened_size=(7, 7, 1)),
         )
 
         self.upscale = nn.Sequential(
@@ -53,11 +57,14 @@ class Generator(nn.Module):
         latent = self.latent(latent)
         label = self.label(label)
 
-        concated_tensor = torch.cat((latent, label), dim=2)
+        print(latent.shape)
+        print(label.shape)
 
-        concated_tensor = concated_tensor.unsqueeze(0)  # [7, 7, 129] -> [1, 7, 7, 129]
-        concated_tensor = concated_tensor.permute(0, 3, 1, 2)  # [1, 7, 7, 129] -> [1, 129, 7, 7]
+        concated_tensor = torch.cat((latent, label), dim=3)
 
+        #concated_tensor = concated_tensor.unsqueeze(0)  # [7, 7, 129] -> [1, 7, 7, 129]
+        #concated_tensor = concated_tensor.permute(1, 4, 2, 3)  # [1, 7, 7, 129] -> [1, 129, 7, 7]
+        print(concated_tensor.shape)
         return torch.squeeze(self.upscale(concated_tensor))
 
 
@@ -68,7 +75,7 @@ class Discriminator(nn.Module):
         self.ngpu = ngpu
 
         self.label = nn.Sequential(
-            nn.Embedding(num_embeddings=24, embedding_dim=50),
+            nn.Embedding(num_embeddings=25, embedding_dim=50),
             nn.Linear(in_features=50, out_features=784),
             nn.Unflatten(dim=0, unflattened_size=(28, 28)),
         )

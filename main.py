@@ -41,10 +41,10 @@ try:
 except FileNotFoundError:
     netG.apply(weights_init)
     netD.apply(weights_init)
-finally:
+except:
     print(":(")
 
-# print(netD(test_images[0], test_labels[0].int()))
+# print(netD(train_images[0], train_labels[0]))
 # plotImage(netG(z, test_labels[0]).detach().numpy())
 
 # create dataloader
@@ -58,9 +58,15 @@ optimizerG = torch.optim.Adam(netG.parameters(), lr=learning_rate, betas=(beta1,
 print("-=!Goblin Mode Activated!=-")
 
 for epoch in range(5):
-    # for each batch in the dataloader
-    for i, data in enumerate(dataloader, 0):
 
+    # for each batch in the dataloader
+    for i, data in enumerate(dataloader, start=0):
+        print(i)
+        real_images = data[0]
+        labels = data[1]
+        z = torch.randn(128, 100, device="cpu")
+        netG(z, labels)
         netD.zero_grad()
+        netD(real_images, labels)
 
 print("-=.Goblin Mode Deactivated.=-")
