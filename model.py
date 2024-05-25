@@ -29,18 +29,14 @@ class Generator(nn.Module):
         self.ngpu = ngpu
 
         self.latent = nn.Sequential(
-            PrintShape(),
             nn.Linear(in_features=100, out_features=6272),
             nn.ReLU(),
-            PrintShape(),
             nn.Unflatten(dim=1, unflattened_size=(7, 7, 128))
         )
 
         self.label = nn.Sequential(
             nn.Embedding(num_embeddings=25, embedding_dim=50),
-            PrintShape(),
             nn.Linear(in_features=50, out_features=49),
-            PrintShape(),
             nn.Unflatten(dim=1, unflattened_size=(7, 7, 1)),
         )
 
@@ -57,14 +53,14 @@ class Generator(nn.Module):
         latent = self.latent(latent)
         label = self.label(label)
 
-        print(latent.shape)
-        print(label.shape)
+        #print(latent.shape)
+        #print(label.shape)
 
         concated_tensor = torch.cat((latent, label), dim=3)
 
         #concated_tensor = concated_tensor.unsqueeze(0)  # [7, 7, 129] -> [1, 7, 7, 129]
-        #concated_tensor = concated_tensor.permute(1, 4, 2, 3)  # [1, 7, 7, 129] -> [1, 129, 7, 7]
-        print(concated_tensor.shape)
+        concated_tensor = concated_tensor.permute(0, 3, 1, 2)  # [128, 7, 7, 129] -> [128, 129, 7, 7]
+        #print(concated_tensor.shape)
         return torch.squeeze(self.upscale(concated_tensor))
 
 
@@ -76,8 +72,11 @@ class Discriminator(nn.Module):
 
         self.label = nn.Sequential(
             nn.Embedding(num_embeddings=25, embedding_dim=50),
+            PrintShape(),
             nn.Linear(in_features=50, out_features=784),
-            nn.Unflatten(dim=0, unflattened_size=(28, 28)),
+            PrintShape(),
+            nn.Unflatten(dim=1, unflattened_size=(28, 28)),
+            PrintShape(),
         )
 
         self.discriminate = nn.Sequential(
@@ -86,17 +85,18 @@ class Discriminator(nn.Module):
             nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=2, padding=1),
             nn.LeakyReLU(),
             nn.MaxPool2d(kernel_size=3, stride=2),
-            nn.Flatten(start_dim=0, end_dim=2),
+            nn.Flatten(start_dim=1, end_dim=3),
             nn.Dropout(p=0.5),
-            nn.Linear(in_features=1152, out_features=1)
+            nn.Linear(in_features=1152, out_features=1),
+            PrintShape(),
         )
 
     def forward(self, latent, label):
 
-        label = self.label(label).unsqueeze(2)
-        latent = latent.unsqueeze(2)
+        label = self.label(label).unsqueeze(3)
+        latent = latent.unsqueeze(3)
 
-        concated_tensor = torch.cat((latent, label), dim=2)
-        concated_tensor = concated_tensor.permute(2, 0, 1)
+        concated_tensor = torch.cat((latent, label), dim=3)
+        concated_tensor = concated_tensor.permute(0, 3, 1, 2)
 
         return self.discriminate(concated_tensor)
