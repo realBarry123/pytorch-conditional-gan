@@ -49,7 +49,7 @@ except:
 
 # create dataloader
 dataloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,
-                                         shuffle=True)
+                                         shuffle=True, drop_last=True)
 
 # define optimizers
 optimizerD = torch.optim.Adam(netD.parameters(), lr=learning_rate, betas=(beta1, 0.999))
@@ -82,6 +82,8 @@ for epoch in range(5):
 
         errD_real.backward()
 
+        errD_real_average = output.mean().item()
+
         # Fake image loss
 
         label.fill_(0.0)
@@ -93,9 +95,10 @@ for epoch in range(5):
 
         errD_fake.backward()
 
-        errD_average = output.mean().item()
+        errD_fake_average = output.mean().item()
 
-        print(errD_average)
+        print(errD_fake_average)
+        print(errD_real_average)
 
         # Add everything
 
