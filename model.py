@@ -53,14 +53,9 @@ class Generator(nn.Module):
         latent = self.latent(latent)
         label = self.label(label)
 
-        #print(latent.shape)
-        #print(label.shape)
-
         concated_tensor = torch.cat((latent, label), dim=3)
 
-        #concated_tensor = concated_tensor.unsqueeze(0)  # [7, 7, 129] -> [1, 7, 7, 129]
         concated_tensor = concated_tensor.permute(0, 3, 1, 2)  # [128, 7, 7, 129] -> [128, 129, 7, 7]
-        #print(concated_tensor.shape)
         return torch.squeeze(self.upscale(concated_tensor))
 
 
@@ -72,11 +67,8 @@ class Discriminator(nn.Module):
 
         self.label = nn.Sequential(
             nn.Embedding(num_embeddings=25, embedding_dim=50),
-            PrintShape(),
             nn.Linear(in_features=50, out_features=784),
-            PrintShape(),
             nn.Unflatten(dim=1, unflattened_size=(28, 28)),
-            PrintShape(),
         )
 
         self.discriminate = nn.Sequential(
@@ -88,7 +80,7 @@ class Discriminator(nn.Module):
             nn.Flatten(start_dim=1, end_dim=3),
             nn.Dropout(p=0.5),
             nn.Linear(in_features=1152, out_features=1),
-            PrintShape(),
+            nn.Sigmoid()
         )
 
     def forward(self, latent, label):

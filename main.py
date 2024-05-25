@@ -55,6 +55,9 @@ dataloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,
 optimizerD = torch.optim.Adam(netD.parameters(), lr=learning_rate, betas=(beta1, 0.999))
 optimizerG = torch.optim.Adam(netG.parameters(), lr=learning_rate, betas=(beta1, 0.999))
 
+# always remember to instantiate your loss
+loss = torch.nn.BCELoss()
+
 print("-=!Goblin Mode Activated!=-")
 
 for epoch in range(5):
@@ -62,11 +65,43 @@ for epoch in range(5):
     # for each batch in the dataloader
     for i, data in enumerate(dataloader, start=0):
         print(i)
-        real_images = data[0]
-        labels = data[1]
+
+        real = data[0].to("cpu")
+        real_labels = data[1].to("cpu")
         z = torch.randn(128, 100, device="cpu")
-        netG(z, labels)
+
+        # ========== TRAIN DISCRIMINATOR ==========
+
+        # Real image loss
+
         netD.zero_grad()
-        netD(real_images, labels)
+        output = netD(real, real_labels).view(-1)  # Forward pass real batch through D
+        label = torch.full((128,), 1.0, dtype=torch.float, device="cpu")
+
+        errD_real = loss(output, label)  # Calculate loss on real batch
+
+        errD_real.backward()
+
+        # Fake image loss
+
+        label.fill_(0.0)
+
+        fake = netG(z, real_labels)
+        output = netD(fake.detach(), real_labels).view(-1)
+
+        errD_fake = loss(output, label)  # Calculate loss on fake batch
+
+        errD_fake.backward()
+
+        errD_average = output.mean().item()
+
+        print(errD_average)
+
+        # Add everything
+
+        errD = errD_real + errD_fake
+        optimizerD.step()
+
+
 
 print("-=.Goblin Mode Deactivated.=-")
