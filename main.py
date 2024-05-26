@@ -28,8 +28,7 @@ test_labels, test_images = format_data(test_data)
 train_data = TensorDataset(train_images, train_labels)
 test_data = TensorDataset(test_images, test_labels)
 
-z = torch.randn(100)
-fixed_noise = torch.randn(64, 100, 1, 1, device="cpu")
+fixed_noise = torch.randn(128, 100, device="cpu")
 
 # Create our heroes
 netG = Generator(0).to("cpu")
@@ -58,9 +57,12 @@ optimizerG = torch.optim.Adam(netG.parameters(), lr=learning_rate, betas=(beta1,
 # always remember to instantiate your loss
 loss = torch.nn.BCELoss()
 
+
+plotImage(netG(fixed_noise, test_labels[:128]).detach().numpy()[0])
+
 print("-=!Goblin Mode Activated!=-")
 
-for epoch in range(5):
+for epoch in range(1):
 
     # for each batch in the dataloader
     for i, data in enumerate(dataloader, start=0):
@@ -72,9 +74,10 @@ for epoch in range(5):
 
         # ========== TRAIN DISCRIMINATOR ==========
 
+        netD.zero_grad()
+
         # Real image loss
 
-        netD.zero_grad()
         output = netD(real, real_labels).view(-1)  # Forward pass real batch through D
         label = torch.full((128,), 1.0, dtype=torch.float, device="cpu")
 
@@ -105,6 +108,22 @@ for epoch in range(5):
         errD = errD_real + errD_fake
         optimizerD.step()
 
+        # ========== TRAIN GENERATOR ==========
 
+        netG.zero_grad()
+
+        label.fill_(1.0)
+
+        output = netD(fake, real_labels).view(-1)
+
+        errG = loss(output, label)
+        errG.backward()
+
+        errG_average = output.mean().item()
+
+        optimizerG.step()
+
+    torch.save(netD.state_dict(), "Models/netD.pkl")
+    torch.save(netG.state_dict(), "Models/netG.pkl")
 
 print("-=.Goblin Mode Deactivated.=-")
