@@ -4,6 +4,7 @@ import numpy
 from model import Generator, Discriminator, weights_init
 from torch.utils.data import TensorDataset, DataLoader
 from preprocessing import format_data
+from fetch import fetch_data
 
 from tqdm import tqdm
 
@@ -21,6 +22,7 @@ batch_size = 128
 
 train_data = numpy.genfromtxt("sign_mnist/train.csv", delimiter=',')
 test_data = numpy.genfromtxt("sign_mnist/test.csv", delimiter=',')
+
 
 train_labels, train_images = format_data(train_data)
 test_labels, test_images = format_data(test_data)
@@ -57,12 +59,17 @@ optimizerG = torch.optim.Adam(netG.parameters(), lr=learning_rate, betas=(beta1,
 # always remember to instantiate your loss
 loss = torch.nn.BCELoss()
 
+fake = netG(fixed_noise, test_labels[:128]).detach().numpy()
 
-plotImage(netG(fixed_noise, test_labels[:128]).detach().numpy()[0])
+plotImage(fake[0])
+plotImage(fake[1])
+plotImage(fake[2])
+
+plt.close()
 
 print("-=!Goblin Mode Activated!=-")
 
-for epoch in range(1):
+for epoch in range(5):
 
     # for each batch in the dataloader
     for i, data in enumerate(dataloader, start=0):
@@ -120,6 +127,8 @@ for epoch in range(1):
         errG.backward()
 
         errG_average = output.mean().item()
+
+        print(errG_average)
 
         optimizerG.step()
 
