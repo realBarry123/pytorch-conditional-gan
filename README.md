@@ -10,6 +10,6 @@ Generating hands has long been a weekness of AI. However, my hope is that once t
 - [x] ~~Load & preprocess images~~
 - [x] ~~Create generator architecture~~
 - [x] ~~Create discriminator architecture~~
-- [ ] Write loss functions
-- [ ] Write training script
+- [x] ~~Write loss functions~~
+- [x] ~~Write training script~~
 - [ ] Tune model
