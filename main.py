@@ -5,6 +5,7 @@ from model import Generator, Discriminator, weights_init
 from torch.utils.data import TensorDataset, DataLoader
 from preprocessing import format_data
 from fetch import fetch_data
+from torchvision import datasets, transforms
 
 from tqdm import tqdm
 
@@ -19,6 +20,14 @@ def plotImage(image):
 learning_rate = 0.0002
 beta1 = 0.5  # math value, default 0.9
 batch_size = 128
+
+# Download and load the training data
+trainset = datasets.MNIST('Datasets/mnist', download=True, train=True, transform=transform)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
+
+# Download and load the test data
+testset = datasets.MNIST('Datasets/mnist', download=True, train=False, transform=transform)
+testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=True)
 
 train_data = numpy.genfromtxt("sign_mnist/train.csv", delimiter=',')
 test_data = numpy.genfromtxt("sign_mnist/test.csv", delimiter=',')
@@ -72,7 +81,7 @@ print("-=!Goblin Mode Activated!=-")
 for epoch in range(5):
 
     # for each batch in the dataloader
-    for i, data in enumerate(dataloader, start=0):
+    for i, data in enumerate(trainloader, start=0):
         print(i)
 
         real = data[0].to("cpu")
