@@ -20,6 +20,12 @@ class PrintShape(nn.Module):
         print(x.shape)
         return x
 
+class MaxPool2d(nn.Module):
+    def __init__(self):
+        super(MaxPool2d, self).__init__()
+
+    def forward(self, x):
+        return nn.functional.max_pool2d(x, kernel_size=2)
 
 class Generator(nn.Module):
 
@@ -97,3 +103,20 @@ class Discriminator(nn.Module):
         concated_tensor = concated_tensor.permute(0, 3, 1, 2)
 
         return self.discriminate(concated_tensor)
+
+class Classifier(nn.Module):
+
+    def __init__(self, ngpu):
+
+        super(Classifier, self).__init__()
+        self.ngpu = ngpu
+
+        self.main = nn.Sequential(
+            nn.Conv2d(in_channels=1, out_channels=10, kernel_size=5),
+            MaxPool2d(),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=10, out_channels=20, kernel_size=5),
+            nn.Dropout2d(),
+            MaxPool2d(),
+            nn.ReLU(),
+        )
