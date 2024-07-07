@@ -4,7 +4,8 @@ import numpy
 from model import Generator, Discriminator, weights_init
 from torch.utils.data import TensorDataset, DataLoader
 from preprocessing import format_data
-from fetch import fetch_data
+import random
+# from fetch import fetch_data
 from torchvision import datasets, transforms
 
 from tqdm import tqdm
@@ -21,23 +22,17 @@ learning_rate = 0.0002
 beta1 = 0.5  # math value, default 0.9
 batch_size = 128
 
+transform = transforms.Compose([
+    transforms.ToTensor()
+])
+
 # Download and load the training data
-trainset = datasets.MNIST('Datasets/mnist', download=True, train=True, transform=transform)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
+train_set = datasets.MNIST('Datasets/mnist', download=True, train=True, transform=transform)
+train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
 
 # Download and load the test data
-testset = datasets.MNIST('Datasets/mnist', download=True, train=False, transform=transform)
-testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=True)
-
-train_data = numpy.genfromtxt("sign_mnist/train.csv", delimiter=',')
-test_data = numpy.genfromtxt("sign_mnist/test.csv", delimiter=',')
-
-
-train_labels, train_images = format_data(train_data)
-test_labels, test_images = format_data(test_data)
-
-train_data = TensorDataset(train_images, train_labels)
-test_data = TensorDataset(test_images, test_labels)
+test_set = datasets.MNIST('Datasets/mnist', download=True, train=False, transform=transform)
+test_loader = torch.utils.data.DataLoader(test_set, batch_size=batch_size, shuffle=True)
 
 fixed_noise = torch.randn(128, 100, device="cpu")
 
@@ -57,10 +52,6 @@ except:
 # print(netD(train_images[0], train_labels[0]))
 # plotImage(netG(z, test_labels[0]).detach().numpy())
 
-# create dataloader
-dataloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,
-                                         shuffle=True, drop_last=True)
-
 # define optimizers
 optimizerD = torch.optim.Adam(netD.parameters(), lr=learning_rate, betas=(beta1, 0.999))
 optimizerG = torch.optim.Adam(netG.parameters(), lr=learning_rate, betas=(beta1, 0.999))
@@ -68,7 +59,14 @@ optimizerG = torch.optim.Adam(netG.parameters(), lr=learning_rate, betas=(beta1,
 # always remember to instantiate your loss
 loss = torch.nn.BCELoss()
 
-fake = netG(fixed_noise, test_labels[:128]).detach().numpy()
+test_labels = []
+
+for i in range(128):
+    test_labels.append(random.randint(1, 9))
+
+test_labels = torch.tensor(test_labels)
+
+fake = netG(fixed_noise, test_labels).detach().numpy()
 
 plotImage(fake[0])
 plotImage(fake[1])
@@ -81,7 +79,7 @@ print("-=!Goblin Mode Activated!=-")
 for epoch in range(5):
 
     # for each batch in the dataloader
-    for i, data in enumerate(trainloader, start=0):
+    for i, data in enumerate(train_loader, start=0):
         print(i)
 
         real = data[0].to("cpu")
@@ -141,7 +139,7 @@ for epoch in range(5):
 
         optimizerG.step()
 
-    torch.save(netD.state_dict(), "Models/netD.pkl")
-    torch.save(netG.state_dict(), "Models/netG.pkl")
+        torch.save(netD.state_dict(), "Models/netD.pkl")
+        torch.save(netG.state_dict(), "Models/netG.pkl")
 
 print("-=.Goblin Mode Deactivated.=-")
