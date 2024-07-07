@@ -2,11 +2,8 @@
 ### About
 I'm making a conditional GAN to learn more about Pytorch, figuring things out as I go. 
 
-Currently, I'm using the [Sign Language MNIST](https://www.kaggle.com/datasets/datamunge/sign-language-mnist) dataset for my model. 
+The model is trained on MNIST digits. 
 
-I will be testing the model on a MNIST digits dataset to make sure it works as intended.
-
-Generating hands has long been a weekness of AI. However, my hope is that once this thing done, it will be able to generate hands that somewhat resemble the real gestures based on a given label. 
 ### 🧑‍💻 Progress Tracker
 - [x] ~~Start!~~
 - [x] ~~Load & preprocess images~~
@@ -14,4 +11,4 @@ Generating hands has long been a weekness of AI. However, my hope is that once t
 - [x] ~~Create discriminator architecture~~
 - [x] ~~Write loss functions~~
 - [x] ~~Write training script~~
-- [ ] Tune model
+- [x] ~~Train model~~
