@@ -62,15 +62,14 @@ loss = torch.nn.BCELoss()
 test_labels = []
 
 for i in range(128):
-    test_labels.append(random.randint(1, 9))
+    test_labels.append(i%10)
 
 test_labels = torch.tensor(test_labels)
 
 fake = netG(fixed_noise, test_labels).detach().numpy()
 
-plotImage(fake[0])
-plotImage(fake[1])
-plotImage(fake[2])
+for i in range(10):
+    plotImage(fake[i])
 
 plt.close()
 
