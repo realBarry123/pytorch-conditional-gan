@@ -27,6 +27,13 @@ class MaxPool2d(nn.Module):
     def forward(self, x):
         return nn.functional.max_pool2d(x, kernel_size=2)
 
+class Softmax(nn.Module):
+    def __init__(self):
+        super(Softmax, self).__init__()
+
+    def forward(self, x):
+        return nn.functional.log_softmax(x, dim=1)
+
 class Generator(nn.Module):
 
     def __init__(self, ngpu):
@@ -119,4 +126,10 @@ class Classifier(nn.Module):
             nn.Dropout2d(),
             MaxPool2d(),
             nn.ReLU(),
+            nn.Flatten(-1, 320),
+            nn.Linear(in_features=320, out_features=50),
+            nn.ReLU(),
+            nn.Dropout(),
+            nn.Linear(in_features=50, out_features=10),
+            Softmax()
         )
