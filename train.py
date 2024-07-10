@@ -79,7 +79,6 @@ for epoch in range(5):
 
     # for each batch in the dataloader
     for i, data in enumerate(train_loader, start=0):
-        print(i)
 
         real = data[0].to("cpu")
         real_labels = data[1].to("cpu")
