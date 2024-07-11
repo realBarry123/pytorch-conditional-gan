@@ -133,3 +133,5 @@ class Classifier(nn.Module):
             nn.Linear(in_features=50, out_features=10),
             Softmax()
         )
+    def forward(self, image):
+        return self.main(image)

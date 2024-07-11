@@ -12,7 +12,7 @@ netC = Classifier(0).to("cpu")
 
 try:
     netC.load_state_dict(torch.load("Models/netG.pkl"))  # load netC weights
-except FileNotFoundError:
+except:
     netC.apply(weights_init)
 
 # Download and load the training data
