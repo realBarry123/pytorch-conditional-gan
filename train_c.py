@@ -2,7 +2,9 @@ import torch
 from model import Classifier, weights_init
 from torchvision import datasets, transforms
 
-batch_size = 128
+batch_size = 64
+
+learning_rate = 0.001
 
 transform = transforms.Compose([
     transforms.ToTensor()
@@ -23,12 +25,19 @@ train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shu
 test_set = datasets.MNIST('Datasets/mnist', download=True, train=False, transform=transform)
 test_loader = torch.utils.data.DataLoader(test_set, batch_size=batch_size, shuffle=True)
 
+optimizer = torch.optim.Adam(netC.parameters(), lr=learning_rate)
+loss_function = torch.nn.CrossEntropyLoss()
+
 for epoch in range(5):
 
     # for each batch in the dataloader
-    for i, data in enumerate(train_loader, start=0):
+    for i, (data, target) in enumerate(train_loader, start=0):
         images = data[0].to("cpu")
         labels = data[1].to("cpu")
 
         netC.zero_grad()
-        netC(images)
+        output = netC(images)
+
+        loss = loss_function(output, target)  # loss function
+        loss.backward()
+        optimizer.step()  # optimizer adjusts the network weights

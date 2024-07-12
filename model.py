@@ -126,7 +126,7 @@ class Classifier(nn.Module):
             nn.Dropout2d(),
             MaxPool2d(),
             nn.ReLU(),
-            nn.Flatten(-1, 320),
+            nn.Flatten(),
             nn.Linear(in_features=320, out_features=50),
             nn.ReLU(),
             nn.Dropout(),
