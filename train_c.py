@@ -1,6 +1,7 @@
 import torch
 from model import Classifier, weights_init
 from torchvision import datasets, transforms
+from data import plotImage
 
 batch_size = 64
 
@@ -31,13 +32,16 @@ loss_function = torch.nn.CrossEntropyLoss()
 for epoch in range(5):
 
     # for each batch in the dataloader
-    for i, (data, target) in enumerate(train_loader, start=0):
+    for i, data in enumerate(train_loader, start=0):
         images = data[0].to("cpu")
         labels = data[1].to("cpu")
 
         netC.zero_grad()
         output = netC(images)
 
-        loss = loss_function(output, target)  # loss function
+        loss = loss_function(output, data[1])  # loss function
         loss.backward()
         optimizer.step()  # optimizer adjusts the network weights
+
+        torch.save(netC.state_dict(), "Models/netC.pkl")
+

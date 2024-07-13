@@ -9,13 +9,10 @@ import random
 from torchvision import datasets, transforms
 
 from tqdm import tqdm
+from data import plotImage
 
 import matplotlib.pyplot as plt
 
-
-def plotImage(image):
-    plt.imshow(image, interpolation='none')
-    plt.show()
 
 
 learning_rate = 0.0002
