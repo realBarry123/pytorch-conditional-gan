@@ -3,6 +3,9 @@ from model import Classifier, weights_init
 from torchvision import datasets, transforms
 from data import plotImage
 
+def get_max(values):
+    return max(range(len(values)), key=values.__getitem__)
+
 batch_size = 64
 
 learning_rate = 0.001
@@ -29,13 +32,15 @@ test_loader = torch.utils.data.DataLoader(test_set, batch_size=batch_size, shuff
 optimizer = torch.optim.Adam(netC.parameters(), lr=learning_rate)
 loss_function = torch.nn.CrossEntropyLoss()
 
+test_batch = next(iter(train_loader))
+print(get_max(netC(torch.tensor(test_batch[0].to("cpu")))[0]))
+
 for epoch in range(5):
 
     # for each batch in the dataloader
     for i, data in enumerate(train_loader, start=0):
         images = data[0].to("cpu")
         labels = data[1].to("cpu")
-
         netC.zero_grad()
         output = netC(images)
 
@@ -44,4 +49,3 @@ for epoch in range(5):
         optimizer.step()  # optimizer adjusts the network weights
 
         torch.save(netC.state_dict(), "Models/netC.pkl")
-
