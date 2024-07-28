@@ -2,6 +2,7 @@ import torch
 from model import Classifier, weights_init
 from torchvision import datasets, transforms
 from data import plotImage
+from tqdm import tqdm
 
 def get_max(values):
     return max(range(len(values)), key=values.__getitem__)
@@ -17,7 +18,8 @@ transform = transforms.Compose([
 netC = Classifier(0).to("cpu")
 
 try:
-    netC.load_state_dict(torch.load("Models/netG.pkl"))  # load netC weights
+    netC.load_state_dict(torch.load("Models/netC.pkl"))  # load netC weights
+    print("loaded netC.pkl")
 except:
     netC.apply(weights_init)
 
@@ -32,11 +34,32 @@ test_loader = torch.utils.data.DataLoader(test_set, batch_size=batch_size, shuff
 optimizer = torch.optim.Adam(netC.parameters(), lr=learning_rate)
 loss_function = torch.nn.CrossEntropyLoss()
 
-test_batch = next(iter(train_loader))
+test_batch = next(iter(test_loader))
 print(get_max(netC(torch.tensor(test_batch[0].to("cpu")))[0]))
 
-for epoch in range(5):
 
+def test():
+    """
+    Tests the network for 1 epoch
+    :param epoch: the number of the current epoch
+    """
+    # set network to evaluation mode
+    netC.eval()
+    sum = 0
+    count = 0
+
+    for i, data in enumerate(test_loader, start=0):
+        images = data[0].to("cpu")
+        labels = data[1].to("cpu")
+        output = netC(images)
+
+        loss = loss_function(output, data[1])  # loss function
+        sum += loss.item()
+        count += 1
+    print(sum/count)
+
+for epoch in range(5):
+    netC.train()
     # for each batch in the dataloader
     for i, data in enumerate(train_loader, start=0):
         images = data[0].to("cpu")
@@ -48,4 +71,5 @@ for epoch in range(5):
         loss.backward()
         optimizer.step()  # optimizer adjusts the network weights
 
-        torch.save(netC.state_dict(), "Models/netC.pkl")
+    torch.save(netC.state_dict(), "Models/netC.pkl")
+    test()
