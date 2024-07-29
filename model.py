@@ -48,7 +48,6 @@ class Generator(nn.Module):
         )
 
         self.label = nn.Sequential(
-            PrintShape(),
             nn.Embedding(num_embeddings=10, embedding_dim=50),
             nn.Linear(in_features=50, out_features=49),
             nn.Unflatten(dim=1, unflattened_size=(7, 7, 1)),
@@ -103,9 +102,6 @@ class Discriminator(nn.Module):
         latent = latent.squeeze(1)
         latent = latent.unsqueeze(3)
 
-        print(label.shape)
-        print(latent.shape)
-
         concated_tensor = torch.cat((latent, label), dim=3)
         concated_tensor = concated_tensor.permute(0, 3, 1, 2)
 
@@ -119,6 +115,7 @@ class Classifier(nn.Module):
         self.ngpu = ngpu
 
         self.main = nn.Sequential(
+            PrintShape(),
             nn.Conv2d(in_channels=1, out_channels=10, kernel_size=5),
             MaxPool2d(),
             nn.ReLU(),

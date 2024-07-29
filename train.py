@@ -1,7 +1,7 @@
 import torch
 import numpy
 
-from model import Generator, Discriminator, weights_init
+from model import Generator, Discriminator, Classifier, weights_init
 from torch.utils.data import TensorDataset, DataLoader
 from preprocessing import format_data
 import random
@@ -12,8 +12,6 @@ from tqdm import tqdm
 from data import plotImage
 
 import matplotlib.pyplot as plt
-
-
 
 learning_rate = 0.0002
 beta1 = 0.5  # math value, default 0.9
@@ -36,10 +34,15 @@ fixed_noise = torch.randn(128, 100, device="cpu")
 # Create our heroes
 netG = Generator(0).to("cpu")
 netD = Discriminator(0).to("cpu")
+netC = Classifier(0).to("cpu")
+
+netC.load_state_dict(torch.load("Models/netC.pkl"))
+netC.eval()
 
 try:
     netG.load_state_dict(torch.load("Models/netG.pkl"))  # load netG weights
     netD.load_state_dict(torch.load("Models/netD.pkl"))  # load netD weights
+
 except FileNotFoundError:
     netG.apply(weights_init)
     netD.apply(weights_init)
@@ -55,6 +58,7 @@ optimizerG = torch.optim.Adam(netG.parameters(), lr=learning_rate, betas=(beta1,
 
 # always remember to instantiate your loss
 loss = torch.nn.BCELoss()
+CE_loss = torch.nn.CrossEntropyLoss()
 
 test_labels = []
 
@@ -124,8 +128,13 @@ for epoch in range(5):
         label.fill_(1.0)
 
         output = netD(fake, real_labels).view(-1)
+        fake = torch.unsqueeze(fake, 1)
+        classification = netC(fake)
 
-        errG = loss(output, label)
+        print(fake.shape)
+        print(classification.shape)
+
+        errG = loss(output, label) + CE_loss(classification, label.long())
         errG.backward()
 
         errG_average = output.mean().item()
