@@ -47,9 +47,6 @@ except FileNotFoundError:
     netG.apply(weights_init)
     netD.apply(weights_init)
 
-# print(netD(train_images[0], train_labels[0]))
-# plotImage(netG(z, test_labels[0]).detach().numpy())
-
 # define optimizers
 optimizerD = torch.optim.Adam(netD.parameters(), lr=learning_rate, betas=(beta1, 0.999))
 optimizerG = torch.optim.Adam(netG.parameters(), lr=learning_rate, betas=(beta1, 0.999))
@@ -111,12 +108,10 @@ for epoch in range(20):
 
         errD_fake_average = output.mean().item()
 
-        print(errD_fake_average)
-        print(errD_real_average)
-
         # Add everything
 
         errD = errD_real + errD_fake
+        print("\nnetD loss:", errD.item())
         optimizerD.step()
 
         # ========== TRAIN GENERATOR ==========
@@ -129,15 +124,12 @@ for epoch in range(20):
         fake = torch.unsqueeze(fake, 1)
         classification = netC(fake)
 
-        print(label.shape)
-        print(classification.shape)
-
         errG = loss(output, label) + CE_loss(classification, one_hot(label.long())) * 0.5
         errG.backward()
 
         errG_average = output.mean().item()
 
-        print(errG_average)
+        print("netG loss:", errG_average)
 
         optimizerG.step()
 
