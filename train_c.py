@@ -45,18 +45,20 @@ def test():
     """
     # set network to evaluation mode
     netC.eval()
-    sum = 0
-    count = 0
+    loss_sum = 0
+    correct = 0
 
-    for i, data in enumerate(test_loader, start=0):
+    for i, data in enumerate(test_loader, start=1):
         images = data[0].to("cpu")
         labels = data[1].to("cpu")
         output = netC(images)
 
-        loss = loss_function(output, data[1])  # loss function
-        sum += loss.item()
-        count += 1
-    print(sum/count)
+        # update progress bar with loss and accuracy values
+        loss_sum += loss_function(output, labels).item() / labels.size(0)
+        pred = output.data.max(1, keepdim=True)[1]
+        correct += pred.eq(labels.data.view_as(pred)).sum() / labels.size(0)
+
+        print(f"val_loss: {loss_sum / i:.4f}, val_accuracy: {correct / i:.4f}")
 
 for epoch in range(5):
     netC.train()
