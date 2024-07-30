@@ -115,7 +115,6 @@ class Classifier(nn.Module):
         self.ngpu = ngpu
 
         self.main = nn.Sequential(
-            PrintShape(),
             nn.Conv2d(in_channels=1, out_channels=10, kernel_size=5),
             MaxPool2d(),
             nn.ReLU(),

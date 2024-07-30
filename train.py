@@ -9,7 +9,7 @@ import random
 from torchvision import datasets, transforms
 
 from tqdm import tqdm
-from data import plotImage
+from data import plot_image, one_hot
 
 import matplotlib.pyplot as plt
 
@@ -46,8 +46,6 @@ try:
 except FileNotFoundError:
     netG.apply(weights_init)
     netD.apply(weights_init)
-except:
-    print(":(")
 
 # print(netD(train_images[0], train_labels[0]))
 # plotImage(netG(z, test_labels[0]).detach().numpy())
@@ -69,14 +67,14 @@ test_labels = torch.tensor(test_labels)
 
 fake = netG(fixed_noise, test_labels).detach().numpy()
 
-for i in range(10):
-    plotImage(fake[i])
+#for i in range(10):
+    #plot_image(fake[i])
 
 plt.close()
 
 print("-=!Goblin Mode Activated!=-")
 
-for epoch in range(5):
+for epoch in range(20):
 
     # for each batch in the dataloader
     for i, data in enumerate(train_loader, start=0):
@@ -131,10 +129,10 @@ for epoch in range(5):
         fake = torch.unsqueeze(fake, 1)
         classification = netC(fake)
 
-        print(fake.shape)
+        print(label.shape)
         print(classification.shape)
 
-        errG = loss(output, label) + CE_loss(classification, label.long())
+        errG = loss(output, label) + CE_loss(classification, one_hot(label.long())) * 0.5
         errG.backward()
 
         errG_average = output.mean().item()
