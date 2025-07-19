@@ -1,13 +1,13 @@
 import torch
 
 from model import Generator, Discriminator, Classifier, weights_init
-from torch.utils.data import TensorDataset, DataLoader
+from torch.utils.data import TensorDataset
 
 # from fetch import fetch_data
 from torchvision import datasets, transforms
 
 from tqdm import tqdm
-from data import one_hot
+from data import one_hot, get_dataloader
 
 learning_rate = 0.0002
 beta1 = 0.3  # math value, default 0.9
@@ -15,17 +15,8 @@ batch_size = 128
 
 classifier_beta = 0.01  # this should be small like definitely 0.01 or lower
 
-transform = transforms.Compose([
-    transforms.ToTensor()
-])
-
 # Download and load the training data
-train_set = datasets.MNIST('Datasets/mnist', download=True, train=True, transform=transform)
-train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
-
-# Download and load the test data
-test_set = datasets.MNIST('Datasets/mnist', download=True, train=False, transform=transform)
-test_loader = torch.utils.data.DataLoader(test_set, batch_size=batch_size, shuffle=True)
+train_loader = get_dataloader(batch_size, train=True)
 
 fixed_noise = torch.randn(128, 100, device="cpu")
 
