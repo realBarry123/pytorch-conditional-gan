@@ -13,7 +13,7 @@ learning_rate = 0.0002
 beta1 = 0.3  # math value, default 0.9
 batch_size = 128
 
-classifier_beta = 0.1
+classifier_beta = 0.01  # this should be small like definitely 0.01 or lower
 
 transform = transforms.Compose([
     transforms.ToTensor()
