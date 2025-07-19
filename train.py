@@ -13,7 +13,7 @@ learning_rate = 0.0002
 beta1 = 0.3  # math value, default 0.9
 batch_size = 128
 
-classifier_beta = 0.0
+classifier_beta = 0.1
 
 transform = transforms.Compose([
     transforms.ToTensor()
@@ -59,8 +59,10 @@ print("-=!Goblin Mode Activated!=-")
 
 for epoch in range(1):
 
+    pbar = tqdm(enumerate(train_loader, start=0), total= len(train_loader))
+
     # for each batch in the dataloader
-    for i, data in enumerate(train_loader, start=0):
+    for i, data in pbar:
 
         real = data[0].to("cpu")
         real_labels = data[1].to("cpu")
@@ -97,7 +99,6 @@ for epoch in range(1):
         # Add everything
 
         errD = errD_real + errD_fake
-        print("\nnetD loss:", errD.item())
         optimizerD.step()
 
         # ========== TRAIN GENERATOR ==========
@@ -108,8 +109,8 @@ for epoch in range(1):
 
         output = netD(fake, real_labels).view(-1)
         fake = torch.unsqueeze(fake, 1)
-        classification = netC(fake)
 
+        classification = netC(fake)
         err_classifier = CE_loss(classification, one_hot(label.long()))
 
         errG = loss(output, label) + err_classifier * classifier_beta
@@ -117,9 +118,13 @@ for epoch in range(1):
 
         errG_average = output.mean().item()
 
-        print("netG loss:", errG.item())
-        print("classifier loss:", err_classifier.item())
-
+        pbar.set_description(
+            f"================================="
+            f"\nnetG loss: {errG_average} "
+            f"\n    netC loss: {err_classifier.item()}"
+            f"\nnetD loss: {errD_fake_average} + {errD_real_average} "
+            f"\nprogress"
+        )
         optimizerG.step()
 
         torch.save(netD.state_dict(), "Models/netD.pkl")
