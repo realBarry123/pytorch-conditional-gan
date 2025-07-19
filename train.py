@@ -55,23 +55,10 @@ optimizerG = torch.optim.Adam(netG.parameters(), lr=learning_rate, betas=(beta1,
 loss = torch.nn.BCELoss()
 CE_loss = torch.nn.CrossEntropyLoss()
 
-test_labels = []
-
-for i in range(128):
-    test_labels.append(i%10)
-
-test_labels = torch.tensor(test_labels)
-
-fake = netG(fixed_noise, test_labels).detach().numpy()
-
-#for i in range(10):
-    #plot_image(fake[i])
-
-plt.close()
 
 print("-=!Goblin Mode Activated!=-")
 
-for epoch in range(20):
+for epoch in range(1):
 
     # for each batch in the dataloader
     for i, data in enumerate(train_loader, start=0):
@@ -124,12 +111,15 @@ for epoch in range(20):
         fake = torch.unsqueeze(fake, 1)
         classification = netC(fake)
 
-        errG = loss(output, label) + CE_loss(classification, one_hot(label.long())) * 0.5
+        err_classifier = CE_loss(classification, one_hot(label.long()))
+
+        errG = loss(output, label) + err_classifier
         errG.backward()
 
         errG_average = output.mean().item()
 
-        print("netG loss:", errG_average)
+        print("netG loss:", errG.item())
+        print("classifier loss:", err_classifier.item())
 
         optimizerG.step()
 
