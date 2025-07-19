@@ -10,8 +10,10 @@ from tqdm import tqdm
 from data import one_hot
 
 learning_rate = 0.0002
-beta1 = 0.5  # math value, default 0.9
+beta1 = 0.3  # math value, default 0.9
 batch_size = 128
+
+classifier_beta = 0.0
 
 transform = transforms.Compose([
     transforms.ToTensor()
@@ -33,7 +35,8 @@ netD = Discriminator(0).to("cpu")
 netC = Classifier(0).to("cpu")
 
 netC.load_state_dict(torch.load("Models/netC.pkl"))
-netC.eval()
+for param in netC.parameters():
+    param.requires_grad = False
 
 try:
     netG.load_state_dict(torch.load("Models/netG.pkl"))  # load netG weights
@@ -109,7 +112,7 @@ for epoch in range(1):
 
         err_classifier = CE_loss(classification, one_hot(label.long()))
 
-        errG = loss(output, label) + err_classifier
+        errG = loss(output, label) + err_classifier * classifier_beta
         errG.backward()
 
         errG_average = output.mean().item()
