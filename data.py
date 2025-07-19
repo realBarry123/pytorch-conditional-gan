@@ -22,5 +22,5 @@ transform = transforms.Compose([
 
 
 def get_dataloader(batch_size, train=True):
-    train_set = datasets.MNIST('Datasets/mnist', download=True, train=True, transform=transform)
-    train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+    dataset = datasets.MNIST('Datasets/mnist', download=True, train=True, transform=transform)
+    return torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
