@@ -1,17 +1,13 @@
 import torch
-import numpy
 
 from model import Generator, Discriminator, Classifier, weights_init
 from torch.utils.data import TensorDataset, DataLoader
-from preprocessing import format_data
-import random
+
 # from fetch import fetch_data
 from torchvision import datasets, transforms
 
 from tqdm import tqdm
-from data import plot_image, one_hot
-
-import matplotlib.pyplot as plt
+from data import one_hot
 
 learning_rate = 0.0002
 beta1 = 0.5  # math value, default 0.9

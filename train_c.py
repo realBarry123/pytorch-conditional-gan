@@ -1,7 +1,6 @@
 import torch
 from model import Classifier, weights_init
 from torchvision import datasets, transforms
-from data import plot_image
 from tqdm import tqdm
 
 def get_max(values):
