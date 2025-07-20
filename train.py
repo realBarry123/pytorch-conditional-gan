@@ -13,7 +13,7 @@ learning_rate = 0.0002
 beta1 = 0.3  # math value, default 0.9
 batch_size = 128
 
-classifier_beta = 0.01  # this should be small like definitely 0.01 or lower
+classifier_beta = 0.005  # this should be small like definitely 0.01 or lower
 
 # Download and load the training data
 train_loader = get_dataloader(batch_size, train=True)

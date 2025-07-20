@@ -15,7 +15,6 @@ test_labels = torch.tensor(test_labels)
 
 fake = netG(fixed_noise, test_labels).detach().numpy()
 
-for i in range(10):
-    plot_image(fake[i])
+plot_multiple(fake, 4, 10)
 
 plt.close()

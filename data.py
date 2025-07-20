@@ -9,6 +9,14 @@ def plot_image(image):
     plt.imshow(image, interpolation='none')
     plt.show()
 
+def plot_multiple(images, h, w):
+
+    fig, axs = plt.subplots(h, w)
+
+    for i, ax in enumerate(axs.flat):  # loop thru positions
+        ax.imshow(images[i])
+
+    plt.show()
 
 def one_hot(nums):
     zeros = torch.zeros(nums.size(0), 10)
