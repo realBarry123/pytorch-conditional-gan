@@ -15,6 +15,7 @@ def plot_multiple(images, h, w):
 
     for i, ax in enumerate(axs.flat):  # loop thru positions
         ax.imshow(images[i])
+        ax.axis('off')
 
     plt.show()
 
